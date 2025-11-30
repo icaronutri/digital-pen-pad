@@ -47,6 +47,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        table: {
+          header: "hsl(var(--table-header))",
+          border: "hsl(var(--table-border))",
+          "row-even": "hsl(var(--table-row-even))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
