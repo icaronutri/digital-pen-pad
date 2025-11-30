@@ -112,3 +112,27 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles for PDF generation */
+@media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+  
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Touch improvements for mobile signature */
+canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
