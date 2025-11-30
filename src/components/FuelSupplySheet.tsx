@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { SignatureDialog } from "./SignatureDialog";
+import { StatusBadge } from "./StatusBadge";
 import { Plus, FileDown, Trash2 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
@@ -26,32 +27,59 @@ export interface FuelEntry {
 }
 
 export const FuelSupplySheet = () => {
-  const [entries, setEntries] = useState<FuelEntry[]>([
-    {
-      id: "1",
-      data: "",
-      hora: "",
-      descricao: "",
-      regFab: "",
-      hodometro: "",
-      unidadeOuSecao: "",
-      qtdLitros: "",
-      postoNome: "",
-      rubrica: "",
-      saram: "",
-      numeroOrdem: "",
-      bico: "",
-      abastecedor: "",
-    },
-  ]);
+  const [tipoCombustivel, setTipoCombustivel] = useState("GASOLINA");
+  const [entries, setEntries] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem("fuelEntries");
+    return saved ? JSON.parse(saved) : [
+      {
+        id: "1",
+        data: "",
+        hora: "",
+        descricao: "",
+        regFab: "",
+        hodometro: "",
+        unidadeOuSecao: "",
+        qtdLitros: "",
+        postoNome: "",
+        rubrica: "",
+        saram: "",
+        numeroOrdem: "",
+        bico: "",
+        abastecedor: "",
+      },
+    ];
+  });
 
-  const [responsavelNome, setResponsavelNome] = useState("");
-  const [responsavelAssinatura, setResponsavelAssinatura] = useState("");
-  const [responsavelSaram, setResponsavelSaram] = useState("");
+  const [responsavelNome, setResponsavelNome] = useState(() => 
+    localStorage.getItem("responsavelNome") || ""
+  );
+  const [responsavelAssinatura, setResponsavelAssinatura] = useState(() => 
+    localStorage.getItem("responsavelAssinatura") || ""
+  );
+  const [responsavelSaram, setResponsavelSaram] = useState(() => 
+    localStorage.getItem("responsavelSaram") || ""
+  );
   const [currentSignatureField, setCurrentSignatureField] = useState<{
     entryId: string;
     type: "rubrica" | "responsavel";
   } | null>(null);
+
+  // Auto-save to localStorage
+  useEffect(() => {
+    localStorage.setItem("fuelEntries", JSON.stringify(entries));
+  }, [entries]);
+
+  useEffect(() => {
+    localStorage.setItem("responsavelNome", responsavelNome);
+  }, [responsavelNome]);
+
+  useEffect(() => {
+    localStorage.setItem("responsavelAssinatura", responsavelAssinatura);
+  }, [responsavelAssinatura]);
+
+  useEffect(() => {
+    localStorage.setItem("responsavelSaram", responsavelSaram);
+  }, [responsavelSaram]);
 
   const addEntry = () => {
     setEntries([
@@ -110,15 +138,34 @@ export const FuelSupplySheet = () => {
     const element = document.getElementById("fuel-sheet-pdf");
     if (!element) return;
 
-    toast.loading("Gerando PDF...");
+    // Validação básica
+    const hasData = entries.some(entry => 
+      entry.data || entry.qtdLitros || entry.postoNome
+    );
+    
+    if (!hasData) {
+      toast.error("Preencha pelo menos uma linha antes de gerar o PDF");
+      return;
+    }
+
+    if (!responsavelNome || !responsavelAssinatura) {
+      toast.error("Nome e assinatura do responsável são obrigatórios");
+      return;
+    }
+
+    toast.loading("Gerando PDF...", { id: "pdf-gen" });
 
     try {
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3,
         backgroundColor: "#ffffff",
+        useCORS: true,
+        logging: false,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
       });
 
-      const imgData = canvas.toDataURL("image/png");
+      const imgData = canvas.toDataURL("image/png", 1.0);
       const pdf = new jsPDF({
         orientation: "landscape",
         unit: "mm",
@@ -131,7 +178,7 @@ export const FuelSupplySheet = () => {
       const imgHeight = canvas.height;
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 10;
+      const imgY = 5;
 
       pdf.addImage(
         imgData,
@@ -145,9 +192,9 @@ export const FuelSupplySheet = () => {
       const fileName = `Folha_Abastecimento_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.pdf`;
       pdf.save(fileName);
 
-      toast.success("PDF gerado com sucesso!");
+      toast.success("PDF gerado com sucesso!", { id: "pdf-gen" });
     } catch (error) {
-      toast.error("Erro ao gerar PDF");
+      toast.error("Erro ao gerar PDF", { id: "pdf-gen" });
       console.error(error);
     }
   };
@@ -156,22 +203,40 @@ export const FuelSupplySheet = () => {
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">
               Folha de Abastecimento
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Controle digital de combustível
-            </p>
+            <div className="flex items-center gap-3 mt-1">
+              <p className="text-muted-foreground text-sm">
+                Controle digital de combustível
+              </p>
+              <StatusBadge />
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={addEntry} className="gap-2">
               <Plus className="w-4 h-4" />
-              Nova Linha
+              <span className="hidden sm:inline">Nova Linha</span>
+              <span className="sm:hidden">Linha</span>
             </Button>
             <Button onClick={generatePDF} variant="secondary" className="gap-2">
               <FileDown className="w-4 h-4" />
-              Gerar PDF
+              <span className="hidden sm:inline">Gerar PDF</span>
+              <span className="sm:hidden">PDF</span>
+            </Button>
+            <Button 
+              onClick={() => {
+                if (confirm("Deseja limpar todos os dados?")) {
+                  localStorage.clear();
+                  window.location.reload();
+                }
+              }} 
+              variant="outline" 
+              className="gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Limpar Tudo</span>
             </Button>
           </div>
         </div>
@@ -179,13 +244,27 @@ export const FuelSupplySheet = () => {
         <Card className="p-6">
           <div id="fuel-sheet-pdf" className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-foreground">
-                TIPO DE COMBUSTÍVEL:
-              </h2>
+              <div className="flex items-center justify-center gap-3">
+                <h2 className="text-xl font-bold text-foreground">
+                  TIPO DE COMBUSTÍVEL:
+                </h2>
+                <select
+                  value={tipoCombustivel}
+                  onChange={(e) => setTipoCombustivel(e.target.value)}
+                  className="border-2 border-primary rounded-md px-3 py-1 font-semibold text-foreground bg-background"
+                >
+                  <option value="GASOLINA">GASOLINA</option>
+                  <option value="DIESEL">DIESEL</option>
+                  <option value="DIESEL S-10">DIESEL S-10</option>
+                  <option value="ETANOL">ETANOL</option>
+                  <option value="GNV">GNV</option>
+                </select>
+              </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
+            <div className="overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0">
+              <div className="inline-block min-w-full align-middle">
+                <table className="w-full border-collapse text-sm min-w-[1400px]">
                 <thead>
                   <tr className="bg-table-header text-primary-foreground">
                     <th className="border border-table-border p-2 text-center min-w-[80px]">
@@ -356,11 +435,13 @@ export const FuelSupplySheet = () => {
                           {entry.rubrica ? "✓ Assinado" : "Assinar"}
                         </Button>
                         {entry.rubrica && (
-                          <img
-                            src={entry.rubrica}
-                            alt="Rubrica"
-                            className="w-full h-16 object-contain mt-1 hidden print:block"
-                          />
+                          <div className="mt-1 border border-table-border rounded p-1 bg-background">
+                            <img
+                              src={entry.rubrica}
+                              alt="Rubrica"
+                              className="w-full h-12 object-contain"
+                            />
+                          </div>
                         )}
                       </td>
                       <td className="border border-table-border p-1">
@@ -418,6 +499,7 @@ export const FuelSupplySheet = () => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
