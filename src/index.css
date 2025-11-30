@@ -136,3 +136,38 @@ canvas {
   -webkit-user-select: none;
   user-select: none;
 }
+
+/* Mobile responsive improvements */
+@media (max-width: 640px) {
+  input[type="date"],
+  input[type="time"],
+  input[type="number"] {
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
+}
+
+/* Smooth scroll for table */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}
+

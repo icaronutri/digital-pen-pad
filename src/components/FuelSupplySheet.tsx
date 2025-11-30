@@ -190,9 +190,18 @@ export const FuelSupplySheet = () => {
       );
 
       const fileName = `Folha_Abastecimento_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.pdf`;
+      
+      // Salvar e abrir automaticamente
+      const pdfBlob = pdf.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      
+      // Abrir em nova aba
+      window.open(pdfUrl, "_blank");
+      
+      // Também fazer download
       pdf.save(fileName);
 
-      toast.success("PDF gerado com sucesso!", { id: "pdf-gen" });
+      toast.success("PDF gerado e aberto com sucesso!", { id: "pdf-gen" });
     } catch (error) {
       toast.error("Erro ao gerar PDF", { id: "pdf-gen" });
       console.error(error);
@@ -200,30 +209,28 @@ export const FuelSupplySheet = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="min-h-screen bg-background p-2 sm:p-4 md:p-8">
+      <div className="max-w-[1600px] mx-auto space-y-4 md:space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Folha de Abastecimento
             </h1>
-            <div className="flex items-center gap-3 mt-1">
-              <p className="text-muted-foreground text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-1">
+              <p className="text-muted-foreground text-xs sm:text-sm">
                 Controle digital de combustível
               </p>
               <StatusBadge />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={addEntry} className="gap-2">
+            <Button onClick={addEntry} className="gap-2 flex-1 sm:flex-none" size="sm">
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Nova Linha</span>
-              <span className="sm:hidden">Linha</span>
+              <span>Nova Linha</span>
             </Button>
-            <Button onClick={generatePDF} variant="secondary" className="gap-2">
+            <Button onClick={generatePDF} variant="secondary" className="gap-2 flex-1 sm:flex-none" size="sm">
               <FileDown className="w-4 h-4" />
-              <span className="hidden sm:inline">Gerar PDF</span>
-              <span className="sm:hidden">PDF</span>
+              <span>Gerar PDF</span>
             </Button>
             <Button 
               onClick={() => {
@@ -233,25 +240,26 @@ export const FuelSupplySheet = () => {
                 }
               }} 
               variant="outline" 
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto" 
+              size="sm"
             >
               <Trash2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Limpar Tudo</span>
+              <span>Limpar Tudo</span>
             </Button>
           </div>
         </div>
 
-        <Card className="p-6">
-          <div id="fuel-sheet-pdf" className="space-y-6">
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-3">
-                <h2 className="text-xl font-bold text-foreground">
+        <Card className="p-3 sm:p-4 md:p-6">
+          <div id="fuel-sheet-pdf" className="space-y-4 md:space-y-6">
+            <div className="text-center mb-4 md:mb-6">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   TIPO DE COMBUSTÍVEL:
                 </h2>
                 <select
                   value={tipoCombustivel}
                   onChange={(e) => setTipoCombustivel(e.target.value)}
-                  className="border-2 border-primary rounded-md px-3 py-1 font-semibold text-foreground bg-background"
+                  className="border-2 border-primary rounded-md px-3 py-1.5 text-sm sm:text-base font-semibold text-foreground bg-background w-full sm:w-auto max-w-[200px]"
                 >
                   <option value="GASOLINA">GASOLINA</option>
                   <option value="DIESEL">DIESEL</option>
@@ -262,42 +270,42 @@ export const FuelSupplySheet = () => {
               </div>
             </div>
 
-            <div className="overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0">
-              <div className="inline-block min-w-full align-middle">
-                <table className="w-full border-collapse text-sm min-w-[1400px]">
+            <div className="overflow-x-auto -mx-3 sm:-mx-4 md:-mx-6">
+              <div className="inline-block min-w-full align-middle px-3 sm:px-4 md:px-6">
+                <table className="w-full border-collapse text-[10px] sm:text-xs md:text-sm min-w-[1200px]">
                 <thead>
                   <tr className="bg-table-header text-primary-foreground">
-                    <th className="border border-table-border p-2 text-center min-w-[80px]">
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[70px] sm:min-w-[80px]">
                       DATA
                     </th>
-                    <th className="border border-table-border p-2 text-center min-w-[60px]">
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[55px] sm:min-w-[60px]">
                       HORA
                     </th>
                     <th
-                      className="border border-table-border p-2 text-center"
+                      className="border border-table-border p-1 sm:p-2 text-center"
                       colSpan={4}
                     >
                       VIATURA
                     </th>
-                    <th className="border border-table-border p-2 text-center min-w-[80px]">
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[70px] sm:min-w-[80px]">
                       QTD. LITROS
                     </th>
                     <th
-                      className="border border-table-border p-2 text-center"
+                      className="border border-table-border p-1 sm:p-2 text-center"
                       colSpan={3}
                     >
                       MOTORISTA
                     </th>
-                    <th className="border border-table-border p-2 text-center min-w-[100px]">
-                      Nº DE ORDEM DE SERVIÇO
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[80px] sm:min-w-[100px]">
+                      Nº DE ORDEM
                     </th>
-                    <th className="border border-table-border p-2 text-center min-w-[60px]">
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[50px] sm:min-w-[60px]">
                       BICO
                     </th>
-                    <th className="border border-table-border p-2 text-center min-w-[100px]">
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[90px] sm:min-w-[100px]">
                       ABASTECEDOR
                     </th>
-                    <th className="border border-table-border p-2 text-center min-w-[60px]">
+                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[55px] sm:min-w-[60px]">
                       Ações
                     </th>
                   </tr>
@@ -340,54 +348,54 @@ export const FuelSupplySheet = () => {
                         index % 2 === 0 ? "bg-background" : "bg-table-row-even"
                       }
                     >
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           type="date"
                           value={entry.data}
                           onChange={(e) =>
                             updateEntry(entry.id, "data", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           type="time"
                           value={entry.hora}
                           onChange={(e) =>
                             updateEntry(entry.id, "hora", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.descricao}
                           onChange={(e) =>
                             updateEntry(entry.id, "descricao", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.regFab}
                           onChange={(e) =>
                             updateEntry(entry.id, "regFab", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.hodometro}
                           onChange={(e) =>
                             updateEntry(entry.id, "hodometro", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.unidadeOuSecao}
                           onChange={(e) =>
@@ -397,10 +405,10 @@ export const FuelSupplySheet = () => {
                               e.target.value
                             )
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           type="number"
                           step="0.01"
@@ -408,19 +416,19 @@ export const FuelSupplySheet = () => {
                           onChange={(e) =>
                             updateEntry(entry.id, "qtdLitros", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.postoNome}
                           onChange={(e) =>
                             updateEntry(entry.id, "postoNome", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Button
                           onClick={() =>
                             setCurrentSignatureField({
@@ -430,48 +438,48 @@ export const FuelSupplySheet = () => {
                           }
                           variant={entry.rubrica ? "secondary" : "outline"}
                           size="sm"
-                          className="w-full h-8 text-xs"
+                          className="w-full h-7 sm:h-8 text-[9px] sm:text-xs px-1"
                         >
-                          {entry.rubrica ? "✓ Assinado" : "Assinar"}
+                          {entry.rubrica ? "✓" : "Assinar"}
                         </Button>
                         {entry.rubrica && (
-                          <div className="mt-1 border border-table-border rounded p-1 bg-background">
+                          <div className="mt-0.5 border border-table-border rounded p-0.5 bg-background">
                             <img
                               src={entry.rubrica}
                               alt="Rubrica"
-                              className="w-full h-12 object-contain"
+                              className="w-full h-10 sm:h-12 object-contain"
                             />
                           </div>
                         )}
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.saram}
                           onChange={(e) =>
                             updateEntry(entry.id, "saram", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.numeroOrdem}
                           onChange={(e) =>
                             updateEntry(entry.id, "numeroOrdem", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.bico}
                           onChange={(e) =>
                             updateEntry(entry.id, "bico", e.target.value)
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Input
                           value={entry.abastecedor}
                           onChange={(e) =>
@@ -481,15 +489,15 @@ export const FuelSupplySheet = () => {
                               e.target.value
                             )
                           }
-                          className="border-0 h-8 text-xs"
+                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
                         />
                       </td>
-                      <td className="border border-table-border p-1">
+                      <td className="border border-table-border p-0.5 sm:p-1">
                         <Button
                           onClick={() => deleteEntry(entry.id)}
                           variant="ghost"
                           size="sm"
-                          className="w-full h-8 text-xs hover:bg-destructive/10 hover:text-destructive"
+                          className="w-full h-7 sm:h-8 text-[10px] sm:text-xs hover:bg-destructive/10 hover:text-destructive px-1"
                           disabled={entries.length === 1}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -502,25 +510,25 @@ export const FuelSupplySheet = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              <div className="border border-table-border p-4 rounded">
-                <p className="font-semibold text-foreground mb-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6 md:mt-8">
+              <div className="border border-table-border p-3 sm:p-4 rounded">
+                <p className="font-semibold text-foreground mb-2 text-sm sm:text-base">
                   TOTAL ABASTECIDO:
                 </p>
-                <p className="text-2xl font-bold text-primary">
+                <p className="text-xl sm:text-2xl font-bold text-primary">
                   {calculateTotal()} L
                 </p>
               </div>
 
-              <div className="border border-table-border p-4 rounded space-y-3">
-                <p className="font-semibold text-foreground">
+              <div className="border border-table-border p-3 sm:p-4 rounded space-y-3">
+                <p className="font-semibold text-foreground text-sm sm:text-base">
                   RESPONSÁVEL - NOME E ASSINATURA
                 </p>
                 <Input
                   placeholder="Nome do responsável"
                   value={responsavelNome}
                   onChange={(e) => setResponsavelNome(e.target.value)}
-                  className="mb-2"
+                  className="mb-2 text-sm"
                 />
                 <Button
                   onClick={() =>
@@ -531,6 +539,7 @@ export const FuelSupplySheet = () => {
                   }
                   variant={responsavelAssinatura ? "secondary" : "outline"}
                   className="w-full"
+                  size="sm"
                 >
                   {responsavelAssinatura ? "✓ Assinado" : "Assinar"}
                 </Button>
@@ -538,18 +547,18 @@ export const FuelSupplySheet = () => {
                   <img
                     src={responsavelAssinatura}
                     alt="Assinatura Responsável"
-                    className="w-full h-24 object-contain border border-table-border rounded mt-2"
+                    className="w-full h-20 sm:h-24 object-contain border border-table-border rounded mt-2"
                   />
                 )}
                 <div className="mt-3">
-                  <label className="text-sm font-medium text-foreground">
+                  <label className="text-xs sm:text-sm font-medium text-foreground">
                     SARAM:
                   </label>
                   <Input
                     placeholder="SARAM do responsável"
                     value={responsavelSaram}
                     onChange={(e) => setResponsavelSaram(e.target.value)}
-                    className="mt-1"
+                    className="mt-1 text-sm"
                   />
                 </div>
               </div>

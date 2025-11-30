@@ -42,27 +42,30 @@ export const SignatureDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-[95vw] sm:max-w-[600px] p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle>Assinar com o dedo</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">Assinar com o dedo</DialogTitle>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Desenhe sua assinatura na área abaixo
+          </p>
         </DialogHeader>
-        <div className="border-2 border-border rounded-lg bg-card overflow-hidden">
+        <div className="border-2 border-border rounded-lg bg-white overflow-hidden shadow-inner">
           <SignatureCanvas
             ref={signatureRef}
             canvasProps={{
-              className: "w-full h-64 touch-none",
+              className: "w-full h-48 sm:h-64 touch-none",
               style: { touchAction: "none" },
             }}
             backgroundColor="rgb(255, 255, 255)"
             penColor="rgb(0, 0, 0)"
           />
         </div>
-        <DialogFooter className="flex gap-2 sm:gap-0">
-          <Button onClick={handleClear} variant="outline" className="gap-2">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2">
+          <Button onClick={handleClear} variant="outline" className="gap-2 w-full sm:w-auto">
             <RotateCcw className="w-4 h-4" />
             Limpar
           </Button>
-          <Button onClick={handleSave} className="gap-2">
+          <Button onClick={handleSave} className="gap-2 w-full sm:w-auto">
             <Check className="w-4 h-4" />
             Salvar Assinatura
           </Button>
