@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SignatureDialog } from "./SignatureDialog";
 import { StatusBadge } from "./StatusBadge";
-import { Plus, FileDown, Trash2 } from "lucide-react";
+import { Plus, FileDown, Trash2, FileText, History } from "lucide-react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface FuelEntry {
   id: string;
@@ -26,28 +28,59 @@ export interface FuelEntry {
   abastecedor: string;
 }
 
+interface SavedPDF {
+  id: string;
+  name: string;
+  date: string;
+  tipoCombustivel: string;
+  blob: string;
+}
+
+interface Authorization {
+  id: string;
+  descricao: string;
+  data: string;
+  unidade: string;
+}
+
 export const FuelSupplySheet = () => {
-  const [tipoCombustivel, setTipoCombustivel] = useState("GASOLINA");
-  const [entries, setEntries] = useState<FuelEntry[]>(() => {
-    const saved = localStorage.getItem("fuelEntries");
-    return saved ? JSON.parse(saved) : [
-      {
-        id: "1",
-        data: "",
-        hora: "",
-        descricao: "",
-        regFab: "",
-        hodometro: "",
-        unidadeOuSecao: "",
-        qtdLitros: "",
-        postoNome: "",
-        rubrica: "",
-        saram: "",
-        numeroOrdem: "",
-        bico: "",
-        abastecedor: "",
-      },
-    ];
+  const [activeTab, setActiveTab] = useState("GASOLINA");
+  const [viewMode, setViewMode] = useState<"form" | "history">("form");
+  
+  // Separate entries for each fuel type
+  const [gasolinaEntries, setGasolinaEntries] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem("fuelEntries_GASOLINA");
+    return saved ? JSON.parse(saved) : [createEmptyEntry()];
+  });
+
+  const [dieselEntries, setDieselEntries] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem("fuelEntries_DIESEL");
+    return saved ? JSON.parse(saved) : [createEmptyEntry()];
+  });
+
+  const [dieselS10Entries, setDieselS10Entries] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem("fuelEntries_DIESEL_S10");
+    return saved ? JSON.parse(saved) : [createEmptyEntry()];
+  });
+
+  const [etanolEntries, setEtanolEntries] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem("fuelEntries_ETANOL");
+    return saved ? JSON.parse(saved) : [createEmptyEntry()];
+  });
+
+  const [gnvEntries, setGnvEntries] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem("fuelEntries_GNV");
+    return saved ? JSON.parse(saved) : [createEmptyEntry()];
+  });
+
+  const [authorizations, setAuthorizations] = useState<Authorization[]>(() => {
+    const saved = localStorage.getItem("authorizations");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [savedPDFs, setSavedPDFs] = useState<SavedPDF[]>(() => {
+    const saved = localStorage.getItem("savedPDFs");
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [responsavelNome, setResponsavelNome] = useState(() => 
@@ -64,10 +97,77 @@ export const FuelSupplySheet = () => {
     type: "rubrica" | "responsavel";
   } | null>(null);
 
+  function createEmptyEntry(): FuelEntry {
+    return {
+      id: Date.now().toString(),
+      data: "",
+      hora: "",
+      descricao: "",
+      regFab: "",
+      hodometro: "",
+      unidadeOuSecao: "",
+      qtdLitros: "",
+      postoNome: "",
+      rubrica: "",
+      saram: "",
+      numeroOrdem: "",
+      bico: "",
+      abastecedor: "",
+    };
+  }
+
+  const getCurrentEntries = () => {
+    switch (activeTab) {
+      case "GASOLINA": return gasolinaEntries;
+      case "DIESEL": return dieselEntries;
+      case "DIESEL_S10": return dieselS10Entries;
+      case "ETANOL": return etanolEntries;
+      case "GNV": return gnvEntries;
+      case "AUTORIZACOES": return [];
+      default: return gasolinaEntries;
+    }
+  };
+
+  const setCurrentEntries = (entries: FuelEntry[]) => {
+    switch (activeTab) {
+      case "GASOLINA": setGasolinaEntries(entries); break;
+      case "DIESEL": setDieselEntries(entries); break;
+      case "DIESEL_S10": setDieselS10Entries(entries); break;
+      case "ETANOL": setEtanolEntries(entries); break;
+      case "GNV": setGnvEntries(entries); break;
+    }
+  };
+
+  const entries = getCurrentEntries();
+
   // Auto-save to localStorage
   useEffect(() => {
-    localStorage.setItem("fuelEntries", JSON.stringify(entries));
-  }, [entries]);
+    localStorage.setItem("fuelEntries_GASOLINA", JSON.stringify(gasolinaEntries));
+  }, [gasolinaEntries]);
+
+  useEffect(() => {
+    localStorage.setItem("fuelEntries_DIESEL", JSON.stringify(dieselEntries));
+  }, [dieselEntries]);
+
+  useEffect(() => {
+    localStorage.setItem("fuelEntries_DIESEL_S10", JSON.stringify(dieselS10Entries));
+  }, [dieselS10Entries]);
+
+  useEffect(() => {
+    localStorage.setItem("fuelEntries_ETANOL", JSON.stringify(etanolEntries));
+  }, [etanolEntries]);
+
+  useEffect(() => {
+    localStorage.setItem("fuelEntries_GNV", JSON.stringify(gnvEntries));
+  }, [gnvEntries]);
+
+  useEffect(() => {
+    localStorage.setItem("authorizations", JSON.stringify(authorizations));
+  }, [authorizations]);
+
+  useEffect(() => {
+    localStorage.setItem("savedPDFs", JSON.stringify(savedPDFs));
+  }, [savedPDFs]);
 
   useEffect(() => {
     localStorage.setItem("responsavelNome", responsavelNome);
@@ -82,37 +182,43 @@ export const FuelSupplySheet = () => {
   }, [responsavelSaram]);
 
   const addEntry = () => {
-    setEntries([
-      ...entries,
+    setCurrentEntries([...entries, createEmptyEntry()]);
+  };
+
+  const addAuthorization = () => {
+    setAuthorizations([
+      ...authorizations,
       {
         id: Date.now().toString(),
-        data: "",
-        hora: "",
         descricao: "",
-        regFab: "",
-        hodometro: "",
-        unidadeOuSecao: "",
-        qtdLitros: "",
-        postoNome: "",
-        rubrica: "",
-        saram: "",
-        numeroOrdem: "",
-        bico: "",
-        abastecedor: "",
+        data: "",
+        unidade: "",
       },
     ]);
   };
 
   const deleteEntry = (id: string) => {
     if (entries.length > 1) {
-      setEntries(entries.filter((entry) => entry.id !== id));
+      setCurrentEntries(entries.filter((entry) => entry.id !== id));
     }
   };
 
   const updateEntry = (id: string, field: keyof FuelEntry, value: string) => {
-    setEntries(
+    setCurrentEntries(
       entries.map((entry) =>
         entry.id === id ? { ...entry, [field]: value } : entry
+      )
+    );
+  };
+
+  const deleteAuthorization = (id: string) => {
+    setAuthorizations(authorizations.filter((auth) => auth.id !== id));
+  };
+
+  const updateAuthorization = (id: string, field: keyof Authorization, value: string) => {
+    setAuthorizations(
+      authorizations.map((auth) =>
+        auth.id === id ? { ...auth, [field]: value } : auth
       )
     );
   };
@@ -134,23 +240,26 @@ export const FuelSupplySheet = () => {
       .toFixed(2);
   };
 
-  const generatePDF = async () => {
-    const element = document.getElementById("fuel-sheet-pdf");
+  const generatePDF = async (isAuthorization = false) => {
+    const elementId = isAuthorization ? "authorization-sheet-pdf" : "fuel-sheet-pdf";
+    const element = document.getElementById(elementId);
     if (!element) return;
 
     // Validação básica
-    const hasData = entries.some(entry => 
-      entry.data || entry.qtdLitros || entry.postoNome
-    );
-    
-    if (!hasData) {
-      toast.error("Preencha pelo menos uma linha antes de gerar o PDF");
-      return;
-    }
+    if (!isAuthorization) {
+      const hasData = entries.some(entry => 
+        entry.data || entry.qtdLitros || entry.postoNome
+      );
+      
+      if (!hasData) {
+        toast.error("Preencha pelo menos uma linha antes de gerar o PDF");
+        return;
+      }
 
-    if (!responsavelNome || !responsavelAssinatura) {
-      toast.error("Nome e assinatura do responsável são obrigatórios");
-      return;
+      if (!responsavelNome || !responsavelAssinatura) {
+        toast.error("Nome e assinatura do responsável são obrigatórios");
+        return;
+      }
     }
 
     toast.loading("Gerando PDF...", { id: "pdf-gen" });
@@ -189,10 +298,25 @@ export const FuelSupplySheet = () => {
         imgHeight * ratio
       );
 
-      const fileName = `Folha_Abastecimento_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.pdf`;
+      const tipoCombustivelLabel = isAuthorization ? "AUTORIZACOES" : activeTab.replace("_", "-");
+      const fileName = `Folha_Abastecimento_${tipoCombustivelLabel}_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.pdf`;
       
-      // Salvar e abrir automaticamente
+      // Salvar PDF no histórico
       const pdfBlob = pdf.output("blob");
+      const reader = new FileReader();
+      reader.readAsDataURL(pdfBlob);
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        const newPDF: SavedPDF = {
+          id: Date.now().toString(),
+          name: fileName,
+          date: new Date().toLocaleString("pt-BR"),
+          tipoCombustivel: tipoCombustivelLabel,
+          blob: base64data,
+        };
+        setSavedPDFs([newPDF, ...savedPDFs]);
+      };
+      
       const pdfUrl = URL.createObjectURL(pdfBlob);
       
       // Abrir em nova aba
@@ -206,6 +330,28 @@ export const FuelSupplySheet = () => {
       toast.error("Erro ao gerar PDF", { id: "pdf-gen" });
       console.error(error);
     }
+  };
+
+  const openSavedPDF = (pdf: SavedPDF) => {
+    const blob = dataURItoBlob(pdf.blob);
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
+
+  const dataURItoBlob = (dataURI: string) => {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  };
+
+  const deleteSavedPDF = (id: string) => {
+    setSavedPDFs(savedPDFs.filter(pdf => pdf.id !== id));
+    toast.success("PDF removido do histórico");
   };
 
   return (
@@ -224,13 +370,23 @@ export const FuelSupplySheet = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={addEntry} className="gap-2 flex-1 sm:flex-none" size="sm">
-              <Plus className="w-4 h-4" />
-              <span>Nova Linha</span>
-            </Button>
-            <Button onClick={generatePDF} variant="secondary" className="gap-2 flex-1 sm:flex-none" size="sm">
-              <FileDown className="w-4 h-4" />
-              <span>Gerar PDF</span>
+            <Button 
+              onClick={() => setViewMode(viewMode === "form" ? "history" : "form")} 
+              variant="outline" 
+              className="gap-2" 
+              size="sm"
+            >
+              {viewMode === "form" ? (
+                <>
+                  <History className="w-4 h-4" />
+                  <span>Histórico</span>
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  <span>Formulário</span>
+                </>
+              )}
             </Button>
             <Button 
               onClick={() => {
@@ -240,7 +396,7 @@ export const FuelSupplySheet = () => {
                 }
               }} 
               variant="outline" 
-              className="gap-2 w-full sm:w-auto" 
+              className="gap-2" 
               size="sm"
             >
               <Trash2 className="w-4 h-4" />
@@ -249,26 +405,136 @@ export const FuelSupplySheet = () => {
           </div>
         </div>
 
-        <Card className="p-3 sm:p-4 md:p-6">
-          <div id="fuel-sheet-pdf" className="space-y-4 md:space-y-6">
-            <div className="text-center mb-4 md:mb-6">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-                <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  TIPO DE COMBUSTÍVEL:
-                </h2>
-                <select
-                  value={tipoCombustivel}
-                  onChange={(e) => setTipoCombustivel(e.target.value)}
-                  className="border-2 border-primary rounded-md px-3 py-1.5 text-sm sm:text-base font-semibold text-foreground bg-background w-full sm:w-auto max-w-[200px]"
-                >
-                  <option value="GASOLINA">GASOLINA</option>
-                  <option value="DIESEL">DIESEL</option>
-                  <option value="DIESEL S-10">DIESEL S-10</option>
-                  <option value="ETANOL">ETANOL</option>
-                  <option value="GNV">GNV</option>
-                </select>
+        {viewMode === "history" ? (
+          <Card className="p-3 sm:p-4 md:p-6">
+            <h2 className="text-xl font-bold text-foreground mb-4">Histórico de PDFs</h2>
+            {savedPDFs.length === 0 ? (
+              <p className="text-muted-foreground text-center py-8">Nenhum PDF salvo ainda</p>
+            ) : (
+              <div className="space-y-2">
+                {savedPDFs.map((pdf) => (
+                  <div key={pdf.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground">{pdf.name}</p>
+                      <p className="text-xs text-muted-foreground">{pdf.date} • {pdf.tipoCombustivel}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={() => openSavedPDF(pdf)} variant="secondary" size="sm">
+                        <FileText className="w-4 h-4" />
+                      </Button>
+                      <Button onClick={() => deleteSavedPDF(pdf.id)} variant="ghost" size="sm">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
+          </Card>
+        ) : (
+          <Card className="p-3 sm:p-4 md:p-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-6 mb-4">
+                <TabsTrigger value="GASOLINA">Gasolina</TabsTrigger>
+                <TabsTrigger value="DIESEL">Diesel</TabsTrigger>
+                <TabsTrigger value="DIESEL_S10">Diesel S-10</TabsTrigger>
+                <TabsTrigger value="ETANOL">Etanol</TabsTrigger>
+                <TabsTrigger value="GNV">GNV</TabsTrigger>
+                <TabsTrigger value="AUTORIZACOES">Autorizações</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="AUTORIZACOES">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Autorizações de Abastecimento de Outras Unidades</h3>
+                    <div className="flex gap-2">
+                      <Button onClick={addAuthorization} className="gap-2" size="sm">
+                        <Plus className="w-4 h-4" />
+                        Nova Autorização
+                      </Button>
+                      <Button onClick={() => generatePDF(true)} variant="secondary" className="gap-2" size="sm">
+                        <FileDown className="w-4 h-4" />
+                        Gerar PDF
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div id="authorization-sheet-pdf" className="space-y-4">
+                    <div className="text-center mb-6">
+                      <h2 className="text-xl font-bold">AUTORIZAÇÕES DE ABASTECIMENTO</h2>
+                    </div>
+                    {authorizations.map((auth) => (
+                      <Card key={auth.id} className="p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div>
+                            <label className="text-sm font-medium">Data</label>
+                            <Input
+                              type="date"
+                              value={auth.data}
+                              onChange={(e) => updateAuthorization(auth.id, "data", e.target.value)}
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="text-sm font-medium">Unidade</label>
+                            <Input
+                              placeholder="Nome da unidade solicitante"
+                              value={auth.unidade}
+                              onChange={(e) => updateAuthorization(auth.id, "unidade", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Descrição da Autorização</label>
+                          <Textarea
+                            placeholder="Descreva os detalhes da autorização..."
+                            value={auth.descricao}
+                            onChange={(e) => updateAuthorization(auth.id, "descricao", e.target.value)}
+                            rows={4}
+                          />
+                        </div>
+                        <Button
+                          onClick={() => deleteAuthorization(auth.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="mt-2 text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remover
+                        </Button>
+                      </Card>
+                    ))}
+                    {authorizations.length === 0 && (
+                      <p className="text-center text-muted-foreground py-8">
+                        Nenhuma autorização cadastrada
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+
+              {["GASOLINA", "DIESEL", "DIESEL_S10", "ETANOL", "GNV"].map((fuelType) => (
+                <TabsContent key={fuelType} value={fuelType}>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div></div>
+                      <div className="flex gap-2">
+                        <Button onClick={addEntry} className="gap-2" size="sm">
+                          <Plus className="w-4 h-4" />
+                          Nova Linha
+                        </Button>
+                        <Button onClick={() => generatePDF(false)} variant="secondary" className="gap-2" size="sm">
+                          <FileDown className="w-4 h-4" />
+                          Gerar PDF
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div id="fuel-sheet-pdf" className="space-y-4 md:space-y-6">
+                      <div className="text-center mb-4 md:mb-6">
+                        <h2 className="text-lg sm:text-xl font-bold text-foreground">
+                          TIPO DE COMBUSTÍVEL: {fuelType.replace("_", " ")}
+                        </h2>
+                      </div>
 
             <div className="overflow-x-auto -mx-3 sm:-mx-4 md:-mx-6">
               <div className="inline-block min-w-full align-middle px-3 sm:px-4 md:px-6">
@@ -563,8 +829,13 @@ export const FuelSupplySheet = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </Card>
+                    </div>
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </Card>
+        )}
       </div>
 
       <SignatureDialog
