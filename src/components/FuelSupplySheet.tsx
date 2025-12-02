@@ -529,81 +529,83 @@ export const FuelSupplySheet = () => {
                       </div>
                     </div>
 
-                    <div id="fuel-sheet-pdf" className="space-y-4 md:space-y-6">
-                      <div className="text-center mb-4 md:mb-6">
-                        <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                          TIPO DE COMBUSTÍVEL: {fuelType.replace("_", " ")}
-                        </h2>
+                    <div id="fuel-sheet-pdf" className="space-y-0 bg-white p-8" style={{ fontFamily: 'Arial, sans-serif' }}>
+                      <div className="mb-1">
+                        <div className="text-center py-2 border-2 border-black bg-gray-50">
+                          <h2 className="text-base font-bold text-black tracking-wide">
+                            TIPO DE COMBUSTÍVEL: {fuelType.replace("_", " ")}
+                          </h2>
+                        </div>
                       </div>
 
-            <div className="overflow-x-auto -mx-3 sm:-mx-4 md:-mx-6">
-              <div className="inline-block min-w-full align-middle px-3 sm:px-4 md:px-6">
-                <table className="w-full border-collapse text-[10px] sm:text-xs md:text-sm min-w-[1200px]">
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full align-middle">
+                <table className="w-full border-collapse text-xs min-w-[1200px]" style={{ borderColor: 'black' }}>
                 <thead>
-                  <tr className="bg-table-header text-primary-foreground">
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[70px] sm:min-w-[80px]">
+                  <tr className="bg-gray-100" style={{ borderColor: 'black' }}>
+                    <th className="border-2 border-black p-2 text-center min-w-[70px] font-bold text-black bg-gray-100">
                       DATA
                     </th>
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[55px] sm:min-w-[60px]">
+                    <th className="border-2 border-black p-2 text-center min-w-[55px] font-bold text-black bg-gray-100">
                       HORA
                     </th>
                     <th
-                      className="border border-table-border p-1 sm:p-2 text-center"
+                      className="border-2 border-black p-2 text-center font-bold text-black bg-gray-100"
                       colSpan={4}
                     >
                       VIATURA
                     </th>
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[70px] sm:min-w-[80px]">
-                      QTD. LITROS
+                    <th className="border-2 border-black p-2 text-center min-w-[70px] font-bold text-black bg-gray-100">
+                      QTD.<br/>LITROS
                     </th>
                     <th
-                      className="border border-table-border p-1 sm:p-2 text-center"
+                      className="border-2 border-black p-2 text-center font-bold text-black bg-gray-100"
                       colSpan={3}
                     >
                       MOTORISTA
                     </th>
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[80px] sm:min-w-[100px]">
-                      Nº DE ORDEM
+                    <th className="border-2 border-black p-2 text-center min-w-[80px] font-bold text-black bg-gray-100">
+                      Nº DE ORDEM<br/>DE SERVIÇO
                     </th>
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[50px] sm:min-w-[60px]">
+                    <th className="border-2 border-black p-2 text-center min-w-[50px] font-bold text-black bg-gray-100">
                       BICO
                     </th>
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[90px] sm:min-w-[100px]">
+                    <th className="border-2 border-black p-2 text-center min-w-[90px] font-bold text-black bg-gray-100">
                       ABASTECEDOR
                     </th>
-                    <th className="border border-table-border p-1 sm:p-2 text-center min-w-[55px] sm:min-w-[60px]">
+                    <th className="border-2 border-black p-2 text-center min-w-[55px] font-bold text-black bg-gray-100 print:hidden">
                       Ações
                     </th>
                   </tr>
-                  <tr className="bg-table-header text-primary-foreground">
-                    <th className="border border-table-border p-2"></th>
-                    <th className="border border-table-border p-2"></th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                  <tr className="bg-gray-100">
+                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       DESCRIÇÃO
                     </th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       REG. FAB
                     </th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       HODÔMETRO
                     </th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       UNIDADE OU SEÇÃO
                     </th>
-                    <th className="border border-table-border p-2"></th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       POSTO-NOME
                     </th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       RUBRICA
                     </th>
-                    <th className="border border-table-border p-2 text-center text-xs">
+                    <th className="border border-black p-1 text-center text-[10px] font-semibold text-black">
                       SARAM
                     </th>
-                    <th className="border border-table-border p-2"></th>
-                    <th className="border border-table-border p-2"></th>
-                    <th className="border border-table-border p-2"></th>
-                    <th className="border border-table-border p-2"></th>
+                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-2 print:hidden"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -611,57 +613,58 @@ export const FuelSupplySheet = () => {
                     <tr
                       key={entry.id}
                       className={
-                        index % 2 === 0 ? "bg-background" : "bg-table-row-even"
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       }
+                      style={{ height: '40px' }}
                     >
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           type="date"
                           value={entry.data}
                           onChange={(e) =>
                             updateEntry(entry.id, "data", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           type="time"
                           value={entry.hora}
                           onChange={(e) =>
                             updateEntry(entry.id, "hora", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.descricao}
                           onChange={(e) =>
                             updateEntry(entry.id, "descricao", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.regFab}
                           onChange={(e) =>
                             updateEntry(entry.id, "regFab", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.hodometro}
                           onChange={(e) =>
                             updateEntry(entry.id, "hodometro", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.unidadeOuSecao}
                           onChange={(e) =>
@@ -671,10 +674,10 @@ export const FuelSupplySheet = () => {
                               e.target.value
                             )
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           type="number"
                           step="0.01"
@@ -682,19 +685,19 @@ export const FuelSupplySheet = () => {
                           onChange={(e) =>
                             updateEntry(entry.id, "qtdLitros", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.postoNome}
                           onChange={(e) =>
                             updateEntry(entry.id, "postoNome", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Button
                           onClick={() =>
                             setCurrentSignatureField({
@@ -704,48 +707,48 @@ export const FuelSupplySheet = () => {
                           }
                           variant={entry.rubrica ? "secondary" : "outline"}
                           size="sm"
-                          className="w-full h-7 sm:h-8 text-[9px] sm:text-xs px-1"
+                          className="w-full h-8 text-[9px] px-1 print:hidden"
                         >
                           {entry.rubrica ? "✓" : "Assinar"}
                         </Button>
                         {entry.rubrica && (
-                          <div className="mt-0.5 border border-table-border rounded p-0.5 bg-background">
+                          <div className="mt-1 bg-white">
                             <img
                               src={entry.rubrica}
                               alt="Rubrica"
-                              className="w-full h-10 sm:h-12 object-contain"
+                              className="w-full h-12 object-contain"
                             />
                           </div>
                         )}
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.saram}
                           onChange={(e) =>
                             updateEntry(entry.id, "saram", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.numeroOrdem}
                           onChange={(e) =>
                             updateEntry(entry.id, "numeroOrdem", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.bico}
                           onChange={(e) =>
                             updateEntry(entry.id, "bico", e.target.value)
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1">
                         <Input
                           value={entry.abastecedor}
                           onChange={(e) =>
@@ -755,15 +758,15 @@ export const FuelSupplySheet = () => {
                               e.target.value
                             )
                           }
-                          className="border-0 h-7 sm:h-8 text-[10px] sm:text-xs px-1 sm:px-2"
+                          className="border-0 h-8 text-xs px-2 bg-transparent text-black"
                         />
                       </td>
-                      <td className="border border-table-border p-0.5 sm:p-1">
+                      <td className="border border-black p-1 print:hidden">
                         <Button
                           onClick={() => deleteEntry(entry.id)}
                           variant="ghost"
                           size="sm"
-                          className="w-full h-7 sm:h-8 text-[10px] sm:text-xs hover:bg-destructive/10 hover:text-destructive px-1"
+                          className="w-full h-8 text-xs hover:bg-destructive/10 hover:text-destructive px-1"
                           disabled={entries.length === 1}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -776,26 +779,30 @@ export const FuelSupplySheet = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6 md:mt-8">
-              <div className="border border-table-border p-3 sm:p-4 rounded">
-                <p className="font-semibold text-foreground mb-2 text-sm sm:text-base">
-                  TOTAL ABASTECIDO:
+            <div className="grid grid-cols-2 gap-8 mt-6 pt-6 border-t-2 border-black">
+              <div className="space-y-2">
+                <p className="font-bold text-black text-sm tracking-wide">
+                  TOTAL ABASTECIDO
                 </p>
-                <p className="text-xl sm:text-2xl font-bold text-primary">
-                  {calculateTotal()} L
-                </p>
+                <div className="border-b-2 border-black pb-2">
+                  <p className="text-2xl font-bold text-black">
+                    {calculateTotal()} L
+                  </p>
+                </div>
               </div>
 
-              <div className="border border-table-border p-3 sm:p-4 rounded space-y-3">
-                <p className="font-semibold text-foreground text-sm sm:text-base">
-                  RESPONSÁVEL - NOME E ASSINATURA
+              <div className="space-y-2">
+                <p className="font-bold text-black text-sm tracking-wide">
+                  RESPONSÁVEL – NOME E ASSINATURA
                 </p>
-                <Input
-                  placeholder="Nome do responsável"
-                  value={responsavelNome}
-                  onChange={(e) => setResponsavelNome(e.target.value)}
-                  className="mb-2 text-sm"
-                />
+                <div className="border-b-2 border-black pb-2 min-h-[60px] flex items-end">
+                  <Input
+                    placeholder="Nome do responsável"
+                    value={responsavelNome}
+                    onChange={(e) => setResponsavelNome(e.target.value)}
+                    className="border-0 text-sm bg-transparent text-black print:placeholder:text-transparent"
+                  />
+                </div>
                 <Button
                   onClick={() =>
                     setCurrentSignatureField({
@@ -804,28 +811,30 @@ export const FuelSupplySheet = () => {
                     })
                   }
                   variant={responsavelAssinatura ? "secondary" : "outline"}
-                  className="w-full"
+                  className="w-full print:hidden"
                   size="sm"
                 >
                   {responsavelAssinatura ? "✓ Assinado" : "Assinar"}
                 </Button>
                 {responsavelAssinatura && (
-                  <img
-                    src={responsavelAssinatura}
-                    alt="Assinatura Responsável"
-                    className="w-full h-20 sm:h-24 object-contain border border-table-border rounded mt-2"
-                  />
+                  <div className="absolute mt-[-55px] w-[calc(100%-2rem)]">
+                    <img
+                      src={responsavelAssinatura}
+                      alt="Assinatura"
+                      className="w-full h-12 object-contain"
+                    />
+                  </div>
                 )}
-                <div className="mt-3">
-                  <label className="text-xs sm:text-sm font-medium text-foreground">
-                    SARAM:
-                  </label>
-                  <Input
-                    placeholder="SARAM do responsável"
-                    value={responsavelSaram}
-                    onChange={(e) => setResponsavelSaram(e.target.value)}
-                    className="mt-1 text-sm"
-                  />
+                <div className="mt-4">
+                  <p className="text-xs font-semibold text-black mb-1">SARAM</p>
+                  <div className="border-b-2 border-black pb-1">
+                    <Input
+                      placeholder="SARAM"
+                      value={responsavelSaram}
+                      onChange={(e) => setResponsavelSaram(e.target.value)}
+                      className="border-0 text-sm bg-transparent text-black print:placeholder:text-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

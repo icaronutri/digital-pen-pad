@@ -125,8 +125,18 @@ All colors MUST be HSL.
     -webkit-print-color-adjust: exact;
   }
   
-  .no-print {
+  .no-print,
+  .print\\:hidden {
     display: none !important;
+  }
+  
+  .print\\:placeholder\\:text-transparent::placeholder {
+    color: transparent !important;
+  }
+  
+  input {
+    border: none !important;
+    background: transparent !important;
   }
 }
 
