@@ -264,6 +264,14 @@ export const FuelSupplySheet = () => {
 
     toast.loading("Gerando PDF...", { id: "pdf-gen" });
 
+    // Remove temporariamente scroll horizontal para captura limpa
+    const scrollWrappers = element.querySelectorAll<HTMLElement>(".overflow-x-auto");
+    const previousOverflows: string[] = [];
+    scrollWrappers.forEach((el) => {
+      previousOverflows.push(el.style.overflow);
+      el.style.overflow = "visible";
+    });
+
     try {
       const canvas = await html2canvas(element, {
         scale: 3,
