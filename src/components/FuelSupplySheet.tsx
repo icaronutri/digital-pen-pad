@@ -337,6 +337,11 @@ export const FuelSupplySheet = () => {
     } catch (error) {
       toast.error("Erro ao gerar PDF", { id: "pdf-gen" });
       console.error(error);
+    } finally {
+      // Restaura overflow
+      scrollWrappers.forEach((el, i) => {
+        el.style.overflow = previousOverflows[i] ?? "";
+      });
     }
   };
 
