@@ -264,6 +264,14 @@ export const FuelSupplySheet = () => {
 
     toast.loading("Gerando PDF...", { id: "pdf-gen" });
 
+    // Remove temporariamente scroll horizontal para captura limpa
+    const scrollWrappers = element.querySelectorAll<HTMLElement>(".overflow-x-auto");
+    const previousOverflows: string[] = [];
+    scrollWrappers.forEach((el) => {
+      previousOverflows.push(el.style.overflow);
+      el.style.overflow = "visible";
+    });
+
     try {
       const canvas = await html2canvas(element, {
         scale: 3,
@@ -329,6 +337,11 @@ export const FuelSupplySheet = () => {
     } catch (error) {
       toast.error("Erro ao gerar PDF", { id: "pdf-gen" });
       console.error(error);
+    } finally {
+      // Restaura overflow
+      scrollWrappers.forEach((el, i) => {
+        el.style.overflow = previousOverflows[i] ?? "";
+      });
     }
   };
 
@@ -791,18 +804,42 @@ export const FuelSupplySheet = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <p className="font-bold text-black text-sm tracking-wide">
                   RESPONSÁVEL – NOME E ASSINATURA
                 </p>
-                <div className="border-b-2 border-black pb-2 min-h-[60px] flex items-end">
-                  <Input
-                    placeholder="Nome do responsável"
-                    value={responsavelNome}
-                    onChange={(e) => setResponsavelNome(e.target.value)}
-                    className="border-0 text-sm bg-transparent text-black print:placeholder:text-transparent"
-                  />
+
+                {/* Área fixa para a assinatura, centralizada acima da linha */}
+                <div
+                  className="w-full overflow-hidden flex items-end justify-center"
+                  style={{ height: "60px" }}
+                >
+                  {responsavelAssinatura && (
+                    <img
+                      src={responsavelAssinatura}
+                      alt="Assinatura do responsável"
+                      style={{
+                        objectFit: "contain",
+                        maxWidth: "100%",
+                        maxHeight: "60px",
+                        display: "block",
+                        margin: "0 auto",
+                      }}
+                    />
+                  )}
                 </div>
+
+                {/* Linha de assinatura */}
+                <div className="border-b-2 border-black w-full" />
+
+                {/* Nome do responsável abaixo da linha */}
+                <Input
+                  placeholder="Nome do responsável"
+                  value={responsavelNome}
+                  onChange={(e) => setResponsavelNome(e.target.value)}
+                  className="border-0 text-sm bg-transparent text-black print:placeholder:text-transparent w-full"
+                />
+
                 <Button
                   onClick={() =>
                     setCurrentSignatureField({
@@ -816,15 +853,7 @@ export const FuelSupplySheet = () => {
                 >
                   {responsavelAssinatura ? "✓ Assinado" : "Assinar"}
                 </Button>
-                {responsavelAssinatura && (
-                  <div className="absolute mt-[-55px] w-[calc(100%-2rem)]">
-                    <img
-                      src={responsavelAssinatura}
-                      alt="Assinatura"
-                      className="w-full h-12 object-contain"
-                    />
-                  </div>
-                )}
+
                 <div className="mt-4">
                   <p className="text-xs font-semibold text-black mb-1">SARAM</p>
                   <div className="border-b-2 border-black pb-1">
@@ -832,7 +861,7 @@ export const FuelSupplySheet = () => {
                       placeholder="SARAM"
                       value={responsavelSaram}
                       onChange={(e) => setResponsavelSaram(e.target.value)}
-                      className="border-0 text-sm bg-transparent text-black print:placeholder:text-transparent"
+                      className="border-0 text-sm bg-transparent text-black print:placeholder:text-transparent w-full"
                     />
                   </div>
                 </div>
